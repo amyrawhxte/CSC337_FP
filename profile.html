@@ -1,0 +1,39 @@
+<!--
+Description: 
+    - Only visible when loggin in (if possible)
+    - Shows user details 
+    - Inlcude logout button, order history, anything else? 
+-->
+<!DOCTYPE html>
+<html>
+    <head>
+        <script>
+            function loadData() {
+                fetch("api/profile")
+                .then(res => {
+                    if (!res.ok) {
+                        throw new Error("Issue with response")
+                    }
+                    res.json()})
+                .then(data => {
+                    document.getElementById("username").textContent = data.username
+                    document.getElementById("email").textContent = data.email
+                })
+                .catch(err => {
+                    console.error("There was a problem with fetch")
+                })
+            }
+        </script>
+    </head>
+    <body>
+        <a href="logout.html">Logout</a>
+        <a href="orders.html">Order History</a>
+
+        <h1>Your Profile</h1>
+        <p>Username: <span id="username"></span></p>
+        <p>Email: <span id="email"></span></p>
+
+        <p>Profile/Website Description</p>
+
+    </body>
+</html>

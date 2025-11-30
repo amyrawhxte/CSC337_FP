@@ -1,0 +1,39 @@
+<!--
+Description: 
+    - Registration form (username, email, password)
+    - sends POST to /register
+-->
+<!DOCTYPE html>
+<html>
+    <head>
+        <script>
+        </script>
+
+        <!--We can put this in a separate file to make it look cleaner-->
+        <style>
+        </style>
+    </head>
+    <body>
+        <h1>Registration Page</h1>
+
+        <p>Description/Instructions for login</p>
+        <form method="POST" action="/register">
+            <!--Require both-->
+            <label>Username: </label>
+            <input type="username">
+            <br>
+
+            <label>Email: </label>
+            <input type="email">
+            <br>
+
+            <label>Password: </label>
+            <input type="password">
+            <br>
+
+            <button type="submit">Login</button>
+        </form>
+
+        <p id="errMsg"></p>
+    </body>
+</html>
