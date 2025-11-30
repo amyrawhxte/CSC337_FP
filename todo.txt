@@ -1,0 +1,18 @@
+1. Complete overall template for website
+    a. Adding product images possible style attributes (or save untli the end on style)
+
+2. Set up server behaviors without database implemenation
+
+3. Set up servers with database implemenation
+
+4. Double check project requirements, complete READMD and turn implemenation
+
+*******************************
+Feel free to add more tasks 
+When task is completed, simply do this so we know what has and hasn't been done: 
+
+1. blah blah 
+    a. blah blah 
+
+    COMPLETED
+*******************************
