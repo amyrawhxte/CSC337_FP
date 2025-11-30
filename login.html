@@ -1,0 +1,45 @@
+<!--
+Description: 
+    - login form (username/email + password)
+    - send POST to /login
+    - On success -> redirect to home.html
+    - Else, display error message with timer to make it disappear
+-->
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <script>
+        </script>
+
+        <!--We can put this in a separate file to make it look cleaner-->
+        <style>
+        </style>
+    </head>
+    <body>
+        <h1>Login Page</h1>
+
+        <p>Description/Instructions for login</p>
+        <form method="POST" action="/login">
+            <!--I firgured we could allow one or the other and simply
+            check if one or the other was provided and if both that the two conincide.
+            
+            Or we can allow either input in one test box and validate an email or username-->
+            <label>Username: </label>
+            <input type="username">
+            <br>
+
+            <label>Email: </label>
+            <input type="email">
+            <br>
+
+            <label>Password: </label>
+            <input type="password">
+            <br>
+
+            <button type="submit">Login</button>
+        </form>
+
+        <p id="errMsg"></p>
+    </body>
+</html>
