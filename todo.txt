@@ -8,6 +8,11 @@
 4. Double check project requirements, complete READMD and turn implemenation
 
 *******************************
+3 Modules: 
+    1. Users
+    2. Order History
+    3. User's current carts  
+
 Feel free to add more tasks 
 When task is completed, simply do this so we know what has and hasn't been done: 
 
