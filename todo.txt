@@ -21,3 +21,17 @@ When task is completed, simply do this so we know what has and hasn't been done:
 
     COMPLETED
 *******************************
+
+AJ: 
+- Checkout && Cart, FE
+
+Imron: 
+- Order, BE
+
+Ishita: 
+- Orders, FE
+
+Amyra: 
+- Checkout && Cart, BE
+
+Style and Page interaction on the fly
