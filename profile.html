@@ -9,7 +9,11 @@ Description:
     <head>
         <script>
             function loadData() {
-                fetch("api/profile")
+                fetch("/api/profile", {
+                    headers: {
+                        "Authorization": localStorage.getItem("authToken")
+                    }
+                })
                 .then(res => {
                     if (!res.ok) {
                         throw new Error("Issue with response")

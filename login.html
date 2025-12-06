@@ -10,6 +10,45 @@ Description:
 <html>
     <head>
         <script>
+            async function handleLogin(event) {
+                event.preventDefault();
+
+                const username = document.getElementById("username").value.trim()
+                const email = document.getElementById("email").value.trim()
+                const password = document.getElementById("password").value.trim()
+
+                const body = {username, email, password}
+
+                try {
+                    const res = await fetch("/login", {
+                        method: "POST",
+                        headers: {"Content-Type": "application/json"},
+                        body: JSON.stringify(body)
+                    })
+
+                    const data = await res.json(); 
+
+                    if (!res.ok) {
+                        showError(data.error || "Login failed");
+                        return; 
+                    }
+
+                    localStorage.setItem("authToken", data.token)
+
+                    window.location.href = "/profile"
+                } catch (err) {
+                    showError("Network error")
+                }
+            }
+
+            function showError(msg) {
+                const err = document.getElementById("errMsg");
+                err.textContent = msg;
+
+                setTimeout(() => {
+                    err.textContent = "";
+                }, 3000);
+            }
         </script>
 
         <!--We can put this in a separate file to make it look cleaner-->
@@ -20,21 +59,21 @@ Description:
         <h1>Login Page</h1>
 
         <p>Description/Instructions for login</p>
-        <form method="POST" action="/login">
+        <form method="POST" action="/login" onsubmit="handleLogin(event)">
             <!--I firgured we could allow one or the other and simply
             check if one or the other was provided and if both that the two conincide.
             
             Or we can allow either input in one test box and validate an email or username-->
             <label>Username: </label>
-            <input type="username">
+            <input type="text" id="username" name="username">
             <br>
 
             <label>Email: </label>
-            <input type="email">
+            <input type="email" id="email" name="email">
             <br>
 
             <label>Password: </label>
-            <input type="password">
+            <input required type="password" id="password" name="password">
             <br>
 
             <button type="submit">Login</button>
