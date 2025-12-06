@@ -5,8 +5,15 @@ Description:
 -->
 <!DOCTYPE html>
 <html>
+    <head>
+        <script>
+            window.onload = function() {
+                localStorage.removeItem("authToken")
+            }
+        </script>
+    </head>
     <body>
-        <h1>You have been successful logged out</h1>
-        <a href="/login">Login</a>
+        <h1>You have been successfully logged out</h1>
+        <a href="/home">Return to homepage</a>
     </body>
 </html>
