@@ -7,11 +7,126 @@ Desciption:
 <!DOCTYPE html>
 <html>
     <head>
+        <script>
+            async function loadProducts() {
+                const list = document.getElementById("productsList")
+                const msg = document.getElementById("msg")
+
+                list.textContent = "Loading products..."
+
+                try {
+                    const res = await fetch("/api/products")
+                    if (!res.ok) {
+                        list.textContent = "Could not load products."
+                        return
+                    }
+
+                    const products = await res.json()
+                    list.textContent = ""
+
+                    if (!products.length) {
+                        list.textContent = "No products available."
+                        return
+                    }
+
+                    products.forEach(function(product) {
+                        const box = document.createElement("div")
+                        box.className = "product"
+
+                        const title = document.createElement("h3")
+                        title.textContent = product.name
+                        box.appendChild(title)
+
+                        const category = document.createElement("p")
+                        category.textContent = "Category: " + (product.category || "Tech")
+                        box.appendChild(category)
+
+                        const desc = document.createElement("p")
+                        desc.textContent = product.description
+                        box.appendChild(desc)
+
+                        const price = document.createElement("p")
+                        price.textContent = "Price: $" + product.price.toFixed(2)
+                        box.appendChild(price)
+
+                        const button = document.createElement("button")
+                        button.textContent = "Add to cart"
+                        button.onclick = function() {
+                            addToCart(product)
+                        }
+                        box.appendChild(button)
+
+                        list.appendChild(box)
+                    })
+                } catch (err) {
+                    console.error("Error loading products", err)
+                    list.textContent = "Network error while loading products."
+                }
+            }
+
+            async function addToCart(product) {
+                const token = localStorage.getItem("authToken")
+
+                if (!token) {
+                    // force login before cart actions
+                    window.location.href = "/login"
+                    return
+                }
+
+                const msg = document.getElementById("msg")
+
+                try {
+                    const res = await fetch("/api/cart/add", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization": token
+                        },
+                        body: JSON.stringify({
+                            productId: product._id,
+                            qty: 1
+                        })
+                    })
+
+                    const data = await res.json()
+
+                    if (!res.ok) {
+                        msg.textContent = data.error || "Could not add to cart"
+                        msg.style.color = "red"
+                    } else {
+                        msg.textContent = "Added " + product.name + " to cart"
+                        msg.style.color = "green"
+                    }
+                } catch (err) {
+                    console.error("Error adding to cart", err)
+                    msg.textContent = "Network error while adding to cart"
+                    msg.style.color = "red"
+                }
+
+                setTimeout(function() {
+                    msg.textContent = ""
+                }, 3000)
+            }
+
+            window.onload = loadProducts
+        </script>
+
+        <style>
+            .product {
+                border: 1px solid #ccc;
+                padding: 10px;
+                margin-bottom: 10px;
+            }
+        </style>
     </head>
     <body>
-        <!--Add products to dsiplay-->
-        <!--Each product goes to it's own detail page
-        or make it so the page allows for "more.." button can be 
-        clicked and a desciprtion is deisplayed-->
+        <a href="/home">Home</a>
+        <a href="/cart">Cart</a>
+
+        <h1>Technology Products</h1>
+        <p>Select an item and add it to your cart.</p>
+
+        <p id="msg"></p>
+        <div id="productsList"></div>
     </body>
 </html>

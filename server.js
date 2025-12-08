@@ -293,4 +293,148 @@ app.get("/products", function(req, res) {
     res.sendFile(path.join(__dirname, "products.html"))
 })
 
+//Imronbek's part
+
+// populate products collection with some tech products so products page has data
+async function seedProducts() {
+    const db = await getDB()
+    const products = db.collection("products")
+
+    const count = await products.countDocuments()
+
+    if (count === 0) {
+        await products.insertMany([
+            {
+                name: "Gaming Laptop",
+                category: "Laptops",
+                price: 1299.99,
+                description: "15 inch gaming laptop with dedicated graphics and 16GB RAM"
+            },
+            {
+                name: "Mechanical Keyboard",
+                category: "Accessories",
+                price: 119.99,
+                description: "RGB mechanical keyboard with hot swap switches"
+            },
+            {
+                name: "Wireless Mouse",
+                category: "Accessories",
+                price: 49.99,
+                description: "Ergonomic wireless mouse with 2.4GHz receiver"
+            },
+            {
+                name: "4K Monitor",
+                category: "Monitors",
+                price: 399.99,
+                description: "27 inch 4K IPS monitor for work and gaming"
+            },
+            {
+                name: "Noise Cancelling Headphones",
+                category: "Audio",
+                price: 199.99,
+                description: "Over ear headphones with active noise cancelling"
+            },
+            {
+                name: "External SSD 1TB",
+                category: "Storage",
+                price: 149.99,
+                description: "USB C portable SSD drive with fast transfer speeds"
+            }
+        ])
+
+        console.log("Populated default products")
+    }
+}
+
+seedProducts().catch(err => {
+    console.error("Failed to populate products", err)
+})
+
+/**
+ * Products api for products page and checkout
+ * Returns list of all products from "products" collection
+ */
+app.get("/api/products", async function(req, res) {
+    const db = await getDB()
+    const products = await db.collection("products").find().toArray()
+
+    res.json(products)
+})
+
+/**
+ * Order history api
+ * Returns all orders for logged in user (newest first).
+ * Also attaches product name and price when possible.
+ */
+app.get("/api/orders", requireToken, async function(req, res) {
+    const db = await getDB()
+    const orders = db.collection("orders")
+    const products = db.collection("products")
+    const {ObjectId} = require("mongodb")
+
+    const orderList = await orders
+        .find({userId: req.userId})
+        .sort({createdAt: -1})
+        .toArray()
+
+    // collect product ids from all orders
+    const ids = []
+    orderList.forEach(function(order) {
+        if (!order.items) return
+        order.items.forEach(function(item) {
+            if (!item.productId) return
+            try {
+                ids.push(new ObjectId(item.productId))
+            } catch (err) {
+                // ignore invalid ids
+            }
+        })
+    })
+
+    const productMap = {}
+
+    if (ids.length > 0) {
+        const productDocs = await products.find({_id: {$in: ids}}).toArray()
+        productDocs.forEach(function(p) {
+            productMap[p._id.toString()] = {
+                name: p.name,
+                price: p.price
+            }
+        })
+    }
+
+    const result = orderList.map(function(order) {
+        const items = (order.items || []).map(function(item) {
+            const info = productMap[item.productId]
+            if (info) {
+                return {
+                    productId: item.productId,
+                    qty: item.qty,
+                    name: info.name,
+                    price: info.price
+                }
+            }
+            return item
+        })
+
+        return {
+            _id: order._id,
+            createdAt: order.createdAt,
+            total: order.total,
+            items: items
+        }
+    })
+
+    res.json(result)
+})
+
+/**
+ * Order history page
+ * Front end html should be in orders.html
+ * The page itself will call /api/orders using auth token
+ */
+app.get("/orders", function(req, res) {
+    res.sendFile(path.join(__dirname, "orders.html"))
+})
+
 app.listen(port)
