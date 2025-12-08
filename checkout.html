@@ -7,6 +7,131 @@ Descirption:
 -->
 <!DOCTYPE html>
 <html>
-    <!--TODO-->
-    This is a basic text test
+    <header>
+        <title>Checkout Complete!</title>
+        <script>
+            async function completeCheckout() {
+                const token = localStorage.getItem("authToken")
+
+                if (!token) {
+                    // force login before cart actions
+                    window.location.href = "/login"
+                    return
+                }
+
+                const msg = document.getElementById("msg")
+
+                try {
+                    const res = await fetch("/api/cart", {
+                        headers: {
+                            "Authorization": token
+                        }
+                    })
+
+                    cart = await res.json();
+
+                    if (!res.ok) {
+                        msg.textContent = cart.error || "Could not load your cart"
+                        msg.style.color = "red"
+                    } else {
+                        calculateCost(cart);  
+                    }
+
+                   
+                } catch (err) {
+                    console.error("Error adding to cart", err)
+                    msg.textContent = "Network error while adding to cart"
+                    msg.style.color = "red"
+                }
+            }
+
+            async function calculateCost(cart) {
+                const res = await fetch("/api/products")
+                if (!res.ok) {
+                    list.textContent = "Could not load products."
+                    return
+                }
+
+                const products = await res.json()
+
+                priceObject = {};
+
+                cart.items.forEach(function(cartItem) {
+                    const product = getProduct(cartItem, products);
+
+                    priceObject[cartItem.productId] = product.price
+                })
+
+                postCartPrices(priceObject);
+            }
+
+            async function postCartPrices(priceObject) {
+                const token = localStorage.getItem("authToken")
+
+                if (!token) {
+                    // force login before cart actions
+                    window.location.href = "/login"
+                    return
+                }
+
+                const msg = document.getElementById("msg")
+
+                try {
+                    const res = await fetch("/api/checkout", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization": token
+                        },
+                        body: JSON.stringify({
+                            pricing: priceObject
+                        })
+                    })
+
+                    const data = await res.json()
+
+                    if (!res.ok) {
+                        msg.textContent = data.error || "Could not checkout"
+                        msg.style.color = "red"
+                    } else {
+                        msg.textContent = "Successfully Checked Out!"
+                        msg.style.color = "green"
+                        const body = document.getElementsByTagName("body")[0];
+
+                        const totalCost = document.createElement("h3");
+                        totalCost.textContent = `Total Cost: $${data.total}`;
+                        body.appendChild(totalCost)
+                    }
+                } catch (err) {
+                    console.error("Error displaying checkout", err)
+                    msg.textContent = "Network error while checking out"
+                    msg.style.color = "red"
+                }
+            }
+
+            function getProduct(cartItem, products){
+                for (const p of products) {
+                    if(p._id.toString() == cartItem.productId.toString()) {
+                        return p;
+                    }
+                }
+
+                return null;
+            }
+
+
+            window.onload = completeCheckout
+        </script>
+    </header>
+    <body>
+        <h1>Checkout</h1>
+
+        <a href="/home">Home</a>
+        <a href="/products">Products</a>
+        <a href="/orders">Order History</a>
+
+        <p id="msg"></p>
+        <div id="cartList"></div>
+    </body>
+
 </html>

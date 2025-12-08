@@ -75,6 +75,22 @@ Description:
                     title.textContent = `${product.name} [Qty: ${cartItem.qty}]`
                     box.appendChild(title)
 
+                    const decreaseButton = document.createElement("button")
+                    decreaseButton.textContent = "-"
+                    decreaseButton.onclick = function() {
+                        changeAmount(cartItem, product, -1);
+                    }
+                    box.appendChild(decreaseButton)
+
+
+                    const increaseButton = document.createElement("button")
+                    increaseButton.textContent = "+"
+                    increaseButton.onclick = function() {
+                        changeAmount(cartItem, product, 1);
+                    }
+                    box.appendChild(increaseButton)
+
+
                     const price = document.createElement("p")
                     const currCost = (product.price * cartItem.qty);
                     price.textContent = "Cost: $" + currCost.toFixed(2);
@@ -83,7 +99,7 @@ Description:
                     const button = document.createElement("button")
                     button.textContent = "Remove From Cart"
                     button.onclick = function() {
-                        removeOne(product)
+                        removeItem(product)
                     }
                     box.appendChild(button)
 
@@ -95,6 +111,17 @@ Description:
                 const title = document.createElement("h3")
                 title.textContent = `Total Cost: ${totalCost.toFixed(2)}`
                 list.appendChild(title)
+
+                const checkOutButton = document.createElement("button")
+                checkOutButton.textContent = "Checkout"
+                checkOutButton.onclick = function() {
+                    checkout()
+                }
+                list.appendChild(checkOutButton)
+            }
+
+            async function checkout() {
+                window.location.href = "/checkout"
             }
 
             function getProduct(cartItem, products){
@@ -107,8 +134,57 @@ Description:
                 return null;
             }
 
+            async function changeAmount(cartItem, product, amt) {
 
-            async function removeOne(product) {
+                if (cartItem.qty + amt <= 0) {
+                    removeItem(product);
+                    return;
+                }
+
+                const token = localStorage.getItem("authToken")
+
+                if (!token) {
+                    // force login before cart actions
+                    window.location.href = "/login"
+                    return
+                }
+
+                const msg = document.getElementById("msg")
+
+                try {
+                    const res = await fetch("/api/cart/add", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization": token
+                        },
+                        body: JSON.stringify({
+                            productId: product._id,
+                            qty: amt
+                        })
+                    })
+
+                    const data = await res.json()
+
+                    if (!res.ok) {
+                        msg.textContent = data.error || "Could not change amount of Item"
+                        msg.style.color = "red"
+                    } else {
+    
+                        getCart();
+                    }
+                } catch (err) {
+                    console.error("Error adding to cart", err)
+                    msg.textContent = "Network error while adding to cart"
+                    msg.style.color = "red"
+                }
+
+                setTimeout(function() {
+                    msg.textContent = ""
+                }, 3000)
+            }
+
+            async function removeItem(product) {
                 const token = localStorage.getItem("authToken")
 
                 if (!token) {
@@ -128,7 +204,6 @@ Description:
                         },
                         body: JSON.stringify({
                             productId: product._id,
-                            qty: 1
                         })
                     })
 

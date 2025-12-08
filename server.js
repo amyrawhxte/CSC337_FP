@@ -213,13 +213,13 @@ app.post("/api/cart/add", requireToken, async function(req, res) {
         return res.status(400).json({error: "productId and qty required"})
     }
 
-    if (qty <= 0) {
-        return res.status(400).json({error: "qty must be > 0"});
-    }
-
     const cart = await getOrCreate(db, req.userId)
 
     const existing = cart.items.find( i => i.productId == productId)
+
+    if (existing && existing.qty <= 0) {
+        return res.status(400).json({error: "qty must be > 0"});
+    }
 
     if (existing) {
         existing.qty += qty
