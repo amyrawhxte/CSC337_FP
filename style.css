@@ -1,3 +1,10 @@
+/*
+Animations Source: https://www.w3schools.com/css/css3_animations.asp
+Media Source: https://www.w3schools.com/cssref/atrule_media.php
+
+Gradients and other functions such as rgba found on W3 Schools as well. 
+*/
+
 body {
     margin: 0;
     padding: 0; 
@@ -170,7 +177,6 @@ input:focus {
     margin: 5px;
 }
 
-/* Holds product name, qty controls, price, and remove button */
 .cartInfo {
     display: flex;
     flex-direction: column;
@@ -178,14 +184,12 @@ input:focus {
     flex: 1;
 }
 
-/* Row for quantity buttons */
 .qtyControls {
     display: flex;
     align-items: center;
     gap: 10px;
 }
 
-/* All cart buttons consistent styling */
 .productBox button,
 .qtyControls button,
 .cartItem button,

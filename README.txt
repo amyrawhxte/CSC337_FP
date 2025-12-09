@@ -1,4 +1,4 @@
-# CSC337 Final Project Name 
+CSC337 Final Project Name 
 
 This is a Node.js web application built using Express and MongoDB. This application provides user authentication, a product catalog, a shoppoing cart, checkout, processing, and order history. 
 
