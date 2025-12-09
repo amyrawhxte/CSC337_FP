@@ -9,6 +9,7 @@ Descirption:
 <html>
     <header>
         <title>Checkout Complete!</title>
+        <link rel="stylesheet" href="style.css">
         <script>
             async function completeCheckout() {
                 const token = localStorage.getItem("authToken")
@@ -99,7 +100,7 @@ Descirption:
                         const body = document.getElementsByTagName("body")[0];
 
                         const totalCost = document.createElement("h3");
-                        totalCost.textContent = `Total Cost: $${data.total}`;
+                        totalCost.textContent = `Total Cost: $${data.total.toFixed(2)}`;
                         body.appendChild(totalCost)
                     }
                 } catch (err) {
@@ -124,11 +125,16 @@ Descirption:
         </script>
     </header>
     <body>
-        <h1>Checkout</h1>
+        <div class = "topBar">
+            <h1>Checkout</h1>
 
-        <a href="/home">Home</a>
-        <a href="/products">Products</a>
-        <a href="/orders">Order History</a>
+            <a href="/login">Login</a>
+            <a href="/register">Register</a>
+            <a href="/profile">Profile</a>
+            <a href="/products">Products</a>
+            <a href="/cart">Cart</a>
+            <a href="/home">Home</a>
+        </div>
 
         <p id="msg"></p>
         <div id="cartList"></div>
