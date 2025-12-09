@@ -1,5 +1,120 @@
 <!--
 Description: 
-    - Dsiplay past orders for the loggin-in user
-    - Backend pulls orders from users collection in MongoDB or JSON
+    - Shows order history for logged in user
+    - Uses GET /api/orders
 -->
+<!DOCTYPE html>
+<html>
+    <head>
+        <script>
+            async function loadOrders() {
+                const token = localStorage.getItem("authToken")
+
+                if (!token) {
+                    window.location.href = "/login"
+                    return
+                }
+
+                const container = document.getElementById("orders")
+                container.textContent = "Loading orders..."
+
+                try {
+                    const res = await fetch("/api/orders", {
+                        headers: {
+                            "Authorization": token
+                        }
+                    })
+
+                    if (res.status === 401) {
+                        // session expired or invalid
+                        window.location.href = "/login"
+                        return
+                    }
+
+                    if (!res.ok) {
+                        container.textContent = "Could not load orders."
+                        return
+                    }
+
+                    const orders = await res.json()
+
+                    if (!orders.length) {
+                        container.textContent = "You have not placed any orders yet."
+                        return
+                    }
+
+                    container.textContent = ""
+
+                    orders.forEach(function(order) {
+                        const box = document.createElement("div")
+                        box.className = "order"
+
+                        const created = new Date(order.createdAt)
+
+                        const title = document.createElement("h3")
+                        title.textContent = "Order " + order._id + " - " + created.toLocaleString()
+                        box.appendChild(title)
+
+                        const total = document.createElement("p")
+                        if (typeof order.total === "number") {
+                            total.textContent = "Total: $" + order.total.toFixed(2)
+                        } else {
+                            total.textContent = "Total: $" + order.total
+                        }
+                        box.appendChild(total)
+
+                        const list = document.createElement("ul")
+
+                        if (order.items && order.items.length) {
+                            order.items.forEach(function(item) {
+                                const li = document.createElement("li")
+
+                                let label = "Product " + item.productId
+                                if (item.name) {
+                                    label = item.name
+                                }
+
+                                let line = label + " - qty " + item.qty
+                                if (item.price) {
+                                    line += " @ $" + item.price.toFixed(2)
+                                }
+
+                                li.textContent = line
+                                list.appendChild(li)
+                            })
+                        } else {
+                            const li = document.createElement("li")
+                            li.textContent = "No items recorded for this order."
+                            list.appendChild(li)
+                        }
+
+                        box.appendChild(list)
+                        container.appendChild(box)
+                    })
+                } catch (err) {
+                    console.error("Error loading orders", err)
+                    container.textContent = "Network error while loading orders."
+                }
+            }
+
+            window.onload = loadOrders
+        </script>
+        <style>
+            .order {
+                border: 1px solid #ccc;
+                padding: 10px;
+                margin-bottom: 10px;
+            }
+        </style>
+    </head>
+    <body>
+        <a href="/home">Home</a>
+        <a href="/products">Products</a>
+        <a href="/cart">Cart</a>
+
+        <h1>Your Order History</h1>
+        <p>All orders placed with your account are listed below.</p>
+
+        <div id="orders"></div>
+    </body>
+</html>
