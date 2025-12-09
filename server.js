@@ -178,17 +178,16 @@ app.post("/api/checkout", requireToken, async function(req, res) {
 
     const result = await orders.insertOne(order)
 
-    // empty cart 
-    await carts.updateOne(
-        {userId: req.userId},
-        {$set: {items:[]}}
-    )
-
     res.json({
         success: true, 
         orderId: result.insertedId, 
         total
     })
+    // empty cart 
+    await carts.updateOne(
+        {userId: req.userId},
+        {$set: {items:[]}}
+    )
 })
 
 app.get("/cart", function(req, res) {
