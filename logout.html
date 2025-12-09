@@ -6,6 +6,7 @@ Description:
 <!DOCTYPE html>
 <html>
     <head>
+        <link rel="stylesheet" href="style.css">
         <script>
             window.onload = function() {
                 localStorage.removeItem("authToken")
@@ -13,7 +14,9 @@ Description:
         </script>
     </head>
     <body>
-        <h1>You have been successfully logged out</h1>
-        <a href="/home">Return to homepage</a>
+        <div class = "topBar">
+            <h1>Successfully Logged Out</h1>
+        </div>
+        <a style = "color: black; padding-left: 10px;", href="/home">Return to Homepage</a>
     </body>
 </html>
