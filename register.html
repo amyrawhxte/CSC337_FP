@@ -58,34 +58,38 @@ Description:
         </style>
     </head>
     <body>
-        <div class = "topBar">
-            <h1>Registration</h1>
+        <div class = "leftNav">
+            <h1>Menu</h1>
 
-            <a href="/login">Login</a>
             <a href="/home">Home</a>
-            <a href="/Profile">Profile</a>
             <a href="/products">Products</a>
             <a href="/cart">Cart</a>
+            <a href="/orders">Orders</a>
+            <a href="/profile">Profile</a>
+            <a href="/login">Login</a>
         </div>
 
-        <p>Description/Instructions for login</p>
-        <form method="POST" action="/register" onsubmit="handleRegister(event)">
-            <!--Require both-->
-            <label>Username: </label>
-            <input require type="text" id="username" name="username">
-            <br>
+        <div class="authContainer">
+            <div class="authBox">
+                <h1>Create Account</h1>
+                <form method="POST" action="/register" onsubmit="handleRegister(event)">
+                    <label>Username: </label>
+                    <input require type="text" id="username" name="username">
+                    <br>
 
-            <label>Email: </label>
-            <input require type="email" id="email" name="email">
-            <br>
+                    <label>Email: </label>
+                    <input require type="email" id="email" name="email">
+                    <br>
 
-            <label>Password: </label>
-            <input require type="password" id="password" name="password">
-            <br>
+                    <label>Password: </label>
+                    <input require type="password" id="password" name="password">
+                    <br>
 
-            <button type="submit">Login</button>
-        </form>
+                    <button type="submit">Login</button>
+                </form>
 
+            </div>
+        </div>
         <p id="errMsg"></p>
     </body>
 </html>

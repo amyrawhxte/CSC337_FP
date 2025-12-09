@@ -13,26 +13,31 @@ Desciption:
                 const list = document.getElementById("productsList")
                 const msg = document.getElementById("msg")
 
-                list.textContent = "Loading products..."
+                list.innerHTML = "<p>Loading products...</p>"
 
                 try {
                     const res = await fetch("/api/products")
                     if (!res.ok) {
-                        list.textContent = "Could not load products."
+                        list.innerHTML = "<p>Could not load products.<p>"
                         return
                     }
 
                     const products = await res.json()
-                    list.textContent = ""
+                    list.innerHTML = ""
 
                     if (!products.length) {
-                        list.textContent = "No products available."
+                        list.innerHTML = "<p>No products available.</p>"
                         return
                     }
 
                     products.forEach(function(product) {
                         const box = document.createElement("div")
-                        box.className = "product"
+                        box.className = "productBox"
+
+                        const img = document.createElement("img")
+                        img.src = product.img
+                        img.className = "productImg"
+                        box.appendChild(img)
 
                         const title = document.createElement("h3")
                         title.textContent = product.name
@@ -61,7 +66,7 @@ Desciption:
                     })
                 } catch (err) {
                     console.error("Error loading products", err)
-                    list.textContent = "Network error while loading products."
+                    list.innerHTML = "<p>Network error while loading products.</p>"
                 }
             }
 
@@ -111,28 +116,29 @@ Desciption:
 
             window.onload = loadProducts
         </script>
-
-        <style>
-            .product {
-                border: 1px solid #ccc;
-                padding: 10px;
-                margin-bottom: 10px;
-            }
-        </style>
     </head>
     <body>
-        <div class = "topBar">
-            <h1>Technology Products</h1>
 
-            <a href="/login">Login</a>
-            <a href="/register">Register</a>
-            <a href="/profile">Profile</a>
+        <div class="leftNav">
+            <h2>Menu</h2>
             <a href="/home">Home</a>
+            <a href="/products">Products</a>
             <a href="/cart">Cart</a>
+            <a href="/order">Order</a>
+            <a href="/profile">Profile</a>
+            <a href="/cart">Checkout</a>
+            <a href="/logout">Logout</a>
         </div>
-        <p>Select an item and add it to your cart.</p>
 
-        <p id="msg"></p>
-        <div id="productsList"></div>
+        <div class = "pageContent">
+            <div class="heroBox">
+                <h1>Available Products</h1>
+                <p>Browse our latest tech items and add them to your cart!</p>
+            </div>
+            <p id="msg"></p>
+
+            <div id="productsList" class="productsList"></div>
+        </div>
+        
     </body>
 </html>
