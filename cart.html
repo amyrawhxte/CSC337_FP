@@ -8,7 +8,7 @@ Description:
 <!DOCTYPE html>
 <html>
     <!--Update based on user-->
-    <header>
+    <head>
         <title>Your Cart</title>
         <link rel="stylesheet" href="style.css">
         <script>
@@ -69,42 +69,59 @@ Description:
 
                     const product = getProduct(cartItem, products);
 
-                    const box = document.createElement("div")
-                    box.className = "cartItem"
+                    const card = document.createElement("div")
+                    card.className = "cartItem"
 
-                    const title = document.createElement("h3")
-                    title.textContent = `${product.name} [Qty: ${cartItem.qty}]`
-                    box.appendChild(title)
+                    const img = document.createElement("img");
+                    img.src = product.img;    
+                    img.className = "productImg";
+                    card.appendChild(img);
+
+                    const info = document.createElement("div")
+                    info.className = "cartInfo"
+
+                    const title = document.createElement("h2")
+                    title.textContent = `${product.name}`
+                    info.appendChild(title)
+
+                    const qtyRow = document.createElement("div")
+                    qtyRow.className = "qtyControls"
 
                     const decreaseButton = document.createElement("button")
                     decreaseButton.textContent = "-"
                     decreaseButton.onclick = function() {
                         changeAmount(cartItem, product, -1);
                     }
-                    box.appendChild(decreaseButton)
+                    qtyRow.appendChild(decreaseButton)
 
+                    const qtyLabel = document.createElement("span")
+                    qtyLabel.textContent = `Qty: ${cartItem.qty}`
+                    qtyRow.appendChild(qtyLabel)
 
                     const increaseButton = document.createElement("button")
                     increaseButton.textContent = "+"
                     increaseButton.onclick = function() {
                         changeAmount(cartItem, product, 1);
                     }
-                    box.appendChild(increaseButton)
+                    qtyRow.appendChild(increaseButton)
+
+                    info.appendChild(qtyRow)
 
 
                     const price = document.createElement("p")
                     const currCost = (product.price * cartItem.qty);
-                    price.textContent = "Cost: $" + currCost.toFixed(2);
-                    box.appendChild(price)
+                    price.innerHTML = `<strong>Cost: $${currCost.toFixed(2)}</strong>`;
+                    info.appendChild(price)
 
                     const button = document.createElement("button")
-                    button.textContent = "Remove From Cart"
+                    button.className = "removeBtn"
+                    button.textContent = "Remove"
                     button.onclick = function() {
                         removeItem(product)
                     }
-                    box.appendChild(button)
-
-                    list.appendChild(box)
+                    info.appendChild(button)
+                    card.appendChild(info)
+                    list.appendChild(card)
 
                     totalCost += currCost
                 })
@@ -115,6 +132,7 @@ Description:
 
                 const checkOutButton = document.createElement("button")
                 checkOutButton.textContent = "Checkout"
+                checkOutButton.id = "checkoutBtn"
                 checkOutButton.onclick = function() {
                     checkout()
                 }
@@ -231,28 +249,31 @@ Description:
             }
             window.onload = getCart
         </script>
-
-        <style>
-            .cartItem {
-                border: 1px solid #ccc;
-                padding: 10px;
-                margin-bottom: 10px;
-            }
-        </style>
-    </header>
+    </head>
     <body>
-        <div class = "topBar">
-            <h1>Shopping Cart</h1>
+        <div class="pageContainer">
 
-            <a href="/login">Login</a>
-            <a href="/register">Register</a>
-            <a href="/profile">Profile</a>
-            <a href="/products">Products</a>
-            <a href="/home">Home</a>
+            <div class="leftNav">
+                <h2>Menu</h2>
+                <a href="/home">Home</a>
+                <a href="/products">Products</a>
+                <a href="/cart">Cart</a>
+                <a href="/orders">Orders</a>
+                <a href="/profile">Profile</a>
+                <a href="/logout">Logout</a>
+            </div>
+
+            <div class="pageContent">
+                <div class="heroBox">
+                    <h1>Your Cart</h1>
+                    <p>Review your items and adjust quantities before checkout.</p>
+                </div>
+
+                <p id="msg"></p>
+                <div id="cartList"></div>
+            </div>
+
         </div>
-
-        <p id="msg"></p>
-        <div id="cartList"></div>
 
     </body>
 </html>

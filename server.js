@@ -12,6 +12,8 @@ app.use(express.json())
 
 // Serve static files
 app.use(express.static(__dirname))
+app.use("/assets", express.static(path.join(__dirname, "assets")));
+
 
 // ensures user is authenticated before accessign specific page 
 async function requireToken(req, res, next) {
@@ -265,19 +267,20 @@ app.post("/api/cart/clear", requireToken, async function(req, res) {
     res.json({success:true})
 })
 
-// retursn profile info 
+// returns profile info 
 app.get("/api/profile", requireToken, async function(req, res) {
     const {ObjectId} = require("mongodb")
     const db = await getDB(); 
     const users = db.collection("users")
 
-    const user = await users.findOne({_id: new ObjectId(req.userId)})
+    console.log("req.userId type:", typeof req.userId, req.userId);
 
+    const user = await users.findOne({_id:req.userId})
     if (!user) {
         return res.status(401).json({error: "User not found"})
     }
 
-    res.json( {
+    res.json({
         username: user.username, 
         email: user.email
     })
@@ -308,37 +311,43 @@ async function seedProducts() {
                 name: "Gaming Laptop",
                 category: "Laptops",
                 price: 1299.99,
-                description: "15 inch gaming laptop with dedicated graphics and 16GB RAM"
+                description: "15 inch gaming laptop with dedicated graphics and 16GB RAM",
+                img: "/assets/gaming_laptop.png"
             },
             {
                 name: "Mechanical Keyboard",
                 category: "Accessories",
                 price: 119.99,
-                description: "RGB mechanical keyboard with hot swap switches"
+                description: "RGB mechanical keyboard with hot swap switches",
+                img: "/assets/keyboard.png"
             },
             {
                 name: "Wireless Mouse",
                 category: "Accessories",
                 price: 49.99,
-                description: "Ergonomic wireless mouse with 2.4GHz receiver"
+                description: "Ergonomic wireless mouse with 2.4GHz receiver", 
+                img: "/assets/mouse.png"
             },
             {
                 name: "4K Monitor",
                 category: "Monitors",
                 price: 399.99,
-                description: "27 inch 4K IPS monitor for work and gaming"
+                description: "27 inch 4K IPS monitor for work and gaming",
+                img: "/assets/monitor.png"
             },
             {
                 name: "Noise Cancelling Headphones",
                 category: "Audio",
                 price: 199.99,
-                description: "Over ear headphones with active noise cancelling"
+                description: "Over ear headphones with active noise cancelling",
+                img: "/assets/headphones.png"
             },
             {
                 name: "External SSD 1TB",
                 category: "Storage",
                 price: 149.99,
-                description: "USB C portable SSD drive with fast transfer speeds"
+                description: "USB C portable SSD drive with fast transfer speeds",
+                img: "/assets/ssd.png"
             }
         ])
 
@@ -398,7 +407,8 @@ app.get("/api/orders", requireToken, async function(req, res) {
         productDocs.forEach(function(p) {
             productMap[p._id.toString()] = {
                 name: p.name,
-                price: p.price
+                price: p.price,
+                img: p.img
             }
         })
     }
@@ -411,7 +421,8 @@ app.get("/api/orders", requireToken, async function(req, res) {
                     productId: item.productId,
                     qty: item.qty,
                     name: info.name,
-                    price: info.price
+                    price: info.price,
+                    img: info.img
                 }
             }
             return item
